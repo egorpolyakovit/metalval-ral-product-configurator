@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Interactive RAL color configurator for industrial metal products. Portfolio demo based on a production B2B tool for MetalVal.">
+  <title>MetalVal RAL Product Configurator</title>
+  <link rel="stylesheet" href="assets/css/ral-configurator.css">
+  <style>
+    body{margin:0;font-family:Roboto,Arial,sans-serif;background:#f3f4f5;color:#222}
+    .demoHero{max-width:980px;margin:0 auto;padding:64px 24px}
+    .demoHero h1{font-size:42px;line-height:1.08;margin:0 0 16px;font-weight:600}
+    .demoHero p{max-width:760px;font-size:18px;line-height:1.55;color:#555}
+    .demoMeta{margin-top:24px;font-size:13px;color:#777}
+    .demoHero .lyukiRalOpen{margin-top:14px;background:#f59a00;color:#fff;border-color:#df8800;font-weight:600}
+  </style>
+</head>
+<body>
+  <main class="demoHero">
+    <h1>RAL Product Configurator</h1>
+    <p>Интерактивный B2B-конфигуратор: выбор изделия и размера, переключение ракурсов, поиск по RAL, динамическая перекраска изображения через Canvas, слайд-шоу и экспорт выбранной конфигурации в PNG.</p>
+    <button type="button" class="lyukiRalOpen" data-lyuki-ral-open>Открыть конфигуратор</button>
+    <div class="demoMeta">Portfolio demo · MetalVal product development · HTML / CSS / JavaScript / Canvas API</div>
+  </main>
+
+  <div class="lyukiRal" id="lyukiRal" aria-hidden="true">
+    <div class="lyukiRal__backdrop" data-lyuki-ral-close aria-hidden="true"></div>
+    <section class="lyukiRal__dialog" role="dialog" aria-modal="true" aria-labelledby="lyukiRalTitle" tabindex="-1">
+      <header class="lyukiRal__header">
+        <h2 class="lyukiRal__title" id="lyukiRalTitle">Выбор цвета<span class="hidden"> для покраски люка</span> по палитре RAL</h2>
+        <button type="button" class="lyukiRal__close" data-lyuki-ral-close aria-label="Закрыть">×</button>
+      </header>
+      <div class="lyukiRal__body">
+        <aside class="lyukiRal__sidebar">
+          <div class="lyukiRal__search">
+            <input type="search" id="lyukiRalSearch" class="lyukiRal__searchInput" placeholder="Найти RAL цвета" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="lyukiRal__colorsHead">
+            <span>Доступные цвета RAL</span>
+            <span class="lyukiRal__colorsCount" id="lyukiRalColorsCount"></span>
+          </div>
+          <div class="lyukiRal__colors" id="lyukiRalColors" role="listbox" aria-label="Палитра RAL">
+            <div class="lyukiRal__loading">Загрузка цветов…</div>
+          </div>
+        </aside>
+        <main class="lyukiRal__content">
+          <div class="lyukiRal__toolbar">
+            <div class="lyukiRal__selectGroup">
+              <div class="lyukiRal__selectWrap">
+                <select class="lyukiRal__select" id="lyukiRalCategory" aria-label="Категория люков"><option value="">Выбрать категорию люков</option></select>
+                <span class="lyukiRal__selectDisplay" id="lyukiRalCategoryDisplay" aria-hidden="true"></span>
+              </div>
+            </div>
+            <div class="lyukiRal__selectGroup">
+              <select class="lyukiRal__select" id="lyukiRalSize" aria-label="Размер люка" disabled><option value="">Выбрать размер</option></select>
+            </div>
+          </div>
+          <div class="lyukiRal__functional">
+            <div class="lyukiRal__views" id="lyukiRalViews" aria-label="Ракурс люка">
+              <button type="button" class="lyukiRal__viewButton" data-view="front">Вид спереди</button>
+              <button type="button" class="lyukiRal__viewButton" data-view="side_a">Сбоку</button>
+              <button type="button" class="lyukiRal__viewButton" data-view="top">Сверху</button>
+            </div>
+            <div class="lyukiRal__saveRow"><button type="button" class="lyukiRal__saveImage" id="lyukiRalSaveImage">Сохранить<span class="hidden"> изображение</span></button></div>
+          </div>
+          <div class="lyukiRal__productInfo">
+            <h3 class="lyukiRal__productTitle" id="lyukiRalProductTitle">Выберите категорию и размер люка</h3>
+            <div class="lyukiRal__productSize" id="lyukiRalProductSize"></div>
+          </div>
+          <div class="lyukiRal__viewer">
+            <div class="lyukiRal__viewerStage" id="lyukiRalViewerStage">
+              <img class="lyukiRal__image" id="lyukiRalImage" src="" alt="" hidden>
+              <div class="lyukiRal__viewerPlaceholder" id="lyukiRalViewerPlaceholder">Выберите люк для просмотра</div>
+            </div>
+            <div class="ral__notice"><p class="lyukiRal__note">Цвета на экране являются визуализацией и могут отличаться от фактического порошкового покрытия.</p></div>
+            <div class="lyukiRal__selectedColor" id="lyukiRalSelectedColor" hidden>
+              <span class="lyukiRal__selectedSwatch" id="lyukiRalSelectedSwatch" aria-hidden="true"></span>
+              <span class="lyukiRal__selectedMeta"><strong id="lyukiRalSelectedName"></strong><small id="lyukiRalSelectedCode"></small></span>
+            </div>
+          </div>
+          <footer class="lyukiRal__footer">
+            <button type="button" class="lyukiRal__slideshow" id="lyukiRalSlideshow" disabled>Включить слайдшоу</button>
+            <div class="lyukiRal__actions">
+              <a href="https://metalval.ru/" target="_blank" rel="noopener" class="lyukiRal__action">MetalVal.ru</a>
+              <a href="https://metalval.ru/feedback/" target="_blank" rel="noopener" class="lyukiRal__action lyukiRal__action--quote" id="lyukiRalQuote">Запросить КП</a>
+            </div>
+          </footer>
+        </main>
+      </div>
+    </section>
+  </div>
+
+  <script src="assets/js/demo-config.js"></script>
+  <script src="assets/js/ral-configurator.js" defer></script>
+</body>
+</html>

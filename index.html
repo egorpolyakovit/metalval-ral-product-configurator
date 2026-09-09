@@ -20,7 +20,7 @@
     <h1>RAL Product Configurator</h1>
     <p>Интерактивный B2B-конфигуратор: выбор изделия и размера, переключение ракурсов, поиск по RAL, динамическая перекраска изображения через Canvas, слайд-шоу и экспорт выбранной конфигурации в PNG.</p>
     <button type="button" class="lyukiRalOpen" data-lyuki-ral-open>Открыть конфигуратор</button>
-    <div class="demoMeta">Portfolio demo · MetalVal product development · HTML / CSS / JavaScript / Canvas API</div>
+    <div class="demoMeta">Portfolio demo · MetalVal product development · HTML / CSS / JavaScript / HTML5 Canvas / JSON</div>
   </main>
 
   <div class="lyukiRal" id="lyukiRal" aria-hidden="true">
@@ -90,7 +90,23 @@
     </section>
   </div>
 
-  <script src="assets/js/demo-config.js"></script>
-  <script src="assets/js/ral-configurator.js" defer></script>
+  <script>
+    fetch('assets/data/demo-config.json')
+      .then(response => {
+        if (!response.ok) throw new Error(`Config load failed: ${response.status}`);
+        return response.json();
+      })
+      .then(config => {
+        window.lyukiRalConfig = config;
+        const script = document.createElement('script');
+        script.src = 'assets/js/ral-configurator.js';
+        script.defer = true;
+        document.body.appendChild(script);
+      })
+      .catch(error => {
+        console.error(error);
+        document.querySelector('.demoMeta').textContent = 'Не удалось загрузить demo-config.json';
+      });
+  </script>
 </body>
 </html>

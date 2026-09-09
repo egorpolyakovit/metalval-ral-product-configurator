@@ -7,7 +7,7 @@ Interactive RAL color configurator for industrial metal products. This public re
 - product/category and size selection;
 - multiple product views (front / side / top);
 - RAL palette search and selection;
-- client-side image recoloring with the **Canvas API** while preserving light/shadow detail;
+- client-side image recoloring with **HTML5 Canvas** while preserving light/shadow detail;
 - slideshow between available views;
 - export of the configured product image to PNG;
 - responsive desktop/mobile interface;
@@ -22,20 +22,42 @@ The configurator helps a customer preview an industrial hatch in a selected RAL 
 - HTML5
 - CSS3
 - Vanilla JavaScript
-- Canvas API
-- JSON-like configuration (`window.lyukiRalConfig`)
+- HTML5 Canvas / Canvas 2D
+- JSON configuration (`assets/data/demo-config.json`)
 
 No framework or build step is required.
 
 ## Run locally
 
-Open `index.html` in a modern browser, or serve the folder with a simple local web server:
+Because the demo configuration is loaded from JSON with `fetch()`, serve the folder with a simple local web server:
 
 ```bash
 python3 -m http.server 8000
 ```
 
 Then open `http://localhost:8000`.
+
+## Data-driven configuration
+
+Product categories, variants, sizes and available views are stored separately from the UI logic in `assets/data/demo-config.json`. This makes the configurator reusable across multiple product groups without hardcoding each SKU in the interface code.
+
+Example:
+
+```json
+{
+  "category": "Инспекционные люки топливного резервуара",
+  "items": [
+    {
+      "item_name": "Инспекционный контрольно-измерительный люк топливного резервуара",
+      "size": "1200×1200",
+      "views": {
+        "front": "assets/images/...-front.webp",
+        "top": "assets/images/...-top.webp"
+      }
+    }
+  ]
+}
+```
 
 ## GitHub Pages
 
@@ -54,8 +76,9 @@ The repository is static and can be published directly with GitHub Pages:
 ├── assets/
 │   ├── css/
 │   │   └── ral-configurator.css
+│   ├── data/
+│   │   └── demo-config.json
 │   ├── js/
-│   │   ├── demo-config.js
 │   │   └── ral-configurator.js
 │   └── images/
 │       └── demo product views
